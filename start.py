@@ -32,6 +32,7 @@ while arg_index < len(sys.argv):
 		timeout_seconds = float(sys.argv[arg_index])
 	else:
 		raise Exception(f"Failed to parse commandline argument: \"{sys.argv[arg_index]}\".")
+	arg_index += 1
 
 temp_directory = tempfile.TemporaryDirectory()
 
