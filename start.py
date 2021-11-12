@@ -4,6 +4,7 @@ from austin_heller_repo.git_manager import GitManager
 import tempfile
 from typing import List
 import json
+from datetime import datetime
 
 git_url = None  # type: str
 script_file_path = None  # type: str
@@ -57,8 +58,18 @@ output = {
 }
 
 try:
+	start_time = datetime.utcnow()
 	vccpi.wait()
-	output["data"] = vccpi.get_output()
+	end_time = datetime.utcnow()
+	child_output = json.loads(vccpi.get_output())
+	output["data"] = [
+		child_output["data"],
+		git_url,
+		script_file_path,
+		script_arguments,
+		(end_time - start_time).total_seconds()
+	]
+	output["exception"] = child_output["exception"]
 except DockerContainerInstanceTimeoutException as ex:
 	output["exception"] = str(ex)
 
