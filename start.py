@@ -45,31 +45,32 @@ vccpm = VersionControlledContainerizedPythonManager(
 	git_manager=git_manager
 )
 
-vccpi = vccpm.run_python_script(
-	git_repo_clone_url=git_url,
-	script_file_path=script_file_path,
-	script_arguments=script_arguments,
-	timeout_seconds=timeout_seconds
-)
-
 output = {
 	"data": None,
 	"exception": None
 }
 
 try:
-	start_time = datetime.utcnow()
-	vccpi.wait()
-	end_time = datetime.utcnow()
-	child_output = json.loads(vccpi.get_output())
-	output["data"] = [
-		child_output["data"],
-		git_url,
-		script_file_path,
-		script_arguments,
-		(end_time - start_time).total_seconds()
-	]
-	output["exception"] = child_output["exception"]
+
+	with vccpm.run_python_script(
+		git_repo_clone_url=git_url,
+		script_file_path=script_file_path,
+		script_arguments=script_arguments,
+		timeout_seconds=timeout_seconds
+	) as vccpi:
+
+		start_time = datetime.utcnow()
+		vccpi.wait()
+		end_time = datetime.utcnow()
+		child_output = json.loads(vccpi.get_output())
+		output["data"] = [
+			child_output["data"],
+			git_url,
+			script_file_path,
+			script_arguments,
+			(end_time - start_time).total_seconds()
+		]
+		output["exception"] = child_output["exception"]
 except DockerContainerInstanceTimeoutException as ex:
 	output["exception"] = str(ex)
 
