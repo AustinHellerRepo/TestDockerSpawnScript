@@ -74,6 +74,7 @@ try:
 		vccpi.wait()
 		end_time = datetime.utcnow()
 		child_output = json.loads(vccpi.get_output().decode())
+		output["is_successful"] = child_output["is_successful"]
 		output["response"] = [
 			child_output["response"],
 			git_url,
