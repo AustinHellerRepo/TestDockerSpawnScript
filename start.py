@@ -5,6 +5,7 @@ import tempfile
 from typing import List
 import json
 from datetime import datetime
+import traceback
 
 git_url = None  # type: str
 script_file_path = None  # type: str
@@ -54,7 +55,8 @@ vccpm = VersionControlledContainerizedPythonManager(
 )
 
 output = {
-	"data": None,
+	"is_successful": False,
+	"response": None,
 	"exception": None
 }
 
@@ -72,15 +74,15 @@ try:
 		vccpi.wait()
 		end_time = datetime.utcnow()
 		child_output = json.loads(vccpi.get_output().decode())
-		output["data"] = [
-			child_output["data"],
+		output["response"] = [
+			child_output["response"],
 			git_url,
 			script_file_path,
 			script_arguments,
 			(end_time - start_time).total_seconds()
 		]
-		output["exception"] = child_output["exception"]
+		output["error"] = child_output["error"]
 except DockerContainerInstanceTimeoutException as ex:
-	output["exception"] = str(ex)
+	output["error"] = f"{ex}\n{traceback.format_exc()}"
 
 print(json.dumps(output))
