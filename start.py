@@ -71,7 +71,7 @@ try:
 		start_time = datetime.utcnow()
 		vccpi.wait()
 		end_time = datetime.utcnow()
-		child_output = json.loads(vccpi.get_output())
+		child_output = json.loads(vccpi.get_output().decode())
 		output["data"] = [
 			child_output["data"],
 			git_url,
